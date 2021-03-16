@@ -10,6 +10,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 
 @Entity
 public class PricePerDay {
@@ -25,6 +27,7 @@ public class PricePerDay {
 	private double price_per_lot;
 	
 	@ManyToOne
+	@JsonBackReference
 	private Product product;
 
 	public long getId() {

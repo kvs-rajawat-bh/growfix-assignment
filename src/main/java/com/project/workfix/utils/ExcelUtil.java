@@ -2,12 +2,12 @@ package com.project.workfix.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -15,10 +15,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 
 import com.project.workfix.models.PricePerDay;
 import com.project.workfix.models.Product;
@@ -41,12 +38,16 @@ public class ExcelUtil {
 	
 	public void parseExcelFile(InputStream is, String SHEET) throws ParseException {
 		try {
+			
+			
 			Workbook workbook = new XSSFWorkbook(is);
 
 			Sheet sheet = workbook.getSheet(SHEET);
 			Iterator<Row> rows = sheet.iterator();
 			
 			int rowNumber = 0;
+			
+			//going through all rows
 			while (rows.hasNext()) {
 				Row currentRow = rows.next();
 
@@ -56,8 +57,10 @@ public class ExcelUtil {
 					continue;
 				}
 
+				//iterator to iterate over each cell of current row
 				Iterator<Cell> cellsInRow = currentRow.iterator();
 
+				//function that does something :)
 				something(cellsInRow, SHEET);
 			}
 			workbook.close();
@@ -70,14 +73,21 @@ public class ExcelUtil {
 	}
 	
 	
+	//read each cell of the row and create an object to store in database
 	 public void something(Iterator<Cell> cellsInRow,String SHEET) throws ParseException {
+		 
 		int cellIndex = 0;
 		Product product=null;
 		PricePerDay ppd=null;
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		
+		//format excel interest column data, for time being.
 		NumberFormat defaultFormat = NumberFormat.getPercentInstance();
 		defaultFormat.setMinimumFractionDigits(1);
-		while (cellsInRow.hasNext() && cellIndex < 4) {
+		
+		
+		int maxCellIndex = (SHEET=="Product Details") ? 4:3;
+		while (cellsInRow.hasNext() && cellIndex < maxCellIndex) {
+			
 			Cell currentCell = cellsInRow.next();
 			switch(currentCell.getCellType()) {
 			case BLANK:break;
@@ -100,7 +110,9 @@ public class ExcelUtil {
 								ppd.setDate(currentCell.getDateCellValue());break;
 							}
 							catch(Exception e) {
-								System.out.println("error in date field");break;
+								DateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+								Date new_date = format.parse(currentCell.getStringCellValue());
+								ppd.setDate(new_date);break;
 							}
 							case 1:try{
 								ppd.setPrice_per_lot(currentCell.getNumericCellValue());break;

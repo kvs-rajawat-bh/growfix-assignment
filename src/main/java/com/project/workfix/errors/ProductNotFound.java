@@ -7,10 +7,30 @@ public class ProductNotFound {
 	private String message;
 	
 	private int code;
-	
-	public ProductNotFound(long id, String message, int code){
-		this.id=id;
-		this.message=message;
-		this.code=code;
+
+	public long getId() {
+		return id;
 	}
+
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public int getCode() {
+		return code;
+	}
+
+	public void setCode(int code) {
+		this.code = code;
+	}
+	
+	
 }
