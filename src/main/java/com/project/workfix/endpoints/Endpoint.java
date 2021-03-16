@@ -1,11 +1,10 @@
 package com.project.workfix.endpoints;
 
 import java.io.IOException;
-import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,24 +28,26 @@ public class Endpoint {
 	@Autowired
 	private ProductRepository productRepo;
 	
-	
-	
 	@Autowired
 	private PricePerDayRepository ppdRepo;
 	
 	// get method to retrieve data when product id and date is passed
-	
+
 	@GetMapping("/get-info")
 	public Object getProductInfo(@RequestParam long id, @RequestParam String date) throws ParseException {
 		Product prod = null;
 		PricePerDay ppd = null;
-		DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Date new_date = format.parse(date);
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+		Date new_date = (Date) format.parse(date);
 		try {
 			prod = productRepo.findById(id).get();
 		}
 		catch(Exception e) {
-			return new ProductNotFound(id, "product not found", 404);
+			ProductNotFound error = new ProductNotFound();
+			error.setCode(404);
+			error.setId(id);
+			error.setMessage("Product not found");
+			return error;
 		}
 		
 		try {
@@ -66,7 +67,6 @@ public class Endpoint {
 		return detail;
 		
 	}
-	
 	
 	
 	//post excel data to sql database. right now only 2 sheets are there.
