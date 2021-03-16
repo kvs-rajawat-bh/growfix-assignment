@@ -2,6 +2,14 @@ package com.project.workfix.errors;
 
 public class DataNotFound {
 	
-	static String error = "request data not found";
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
+	private String error;
 
 }
