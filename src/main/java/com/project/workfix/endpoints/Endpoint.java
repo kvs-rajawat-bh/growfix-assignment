@@ -50,11 +50,12 @@ public class Endpoint {
 			return error;
 		}
 		
-		try {
-			ppd = ppdRepo.findByProductAndDate(prod, new_date);
-		}
-		catch(Exception e) {
-			return new DataNotFound();
+		ppd = ppdRepo.findByProductAndDate(prod, new_date);
+		
+		if(ppd==null) {
+			DataNotFound error = new DataNotFound();
+			error.setError("No matching Data for product on this date");
+			return error;
 		}
 		
 		
