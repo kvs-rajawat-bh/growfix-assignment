@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import com.project.workfix.models.PricePerDay;
 import com.project.workfix.models.Product;
+import com.project.workfix.repository.PricePerDayRepository;
 import com.project.workfix.repository.ProductRepository;
 
 @Component
@@ -30,14 +31,20 @@ public class ExcelUtil {
 	@Autowired
 	private ProductRepository prodRepo;
 	
-	public List parseExcelFile(InputStream is, String SHEET) throws ParseException {
+	@Autowired
+	private PricePerDayRepository ppdRepo;
+	
+	public ExcelUtil(ProductRepository prodRepo, PricePerDayRepository ppdRepo) {
+		this.prodRepo=prodRepo;
+		this.ppdRepo=ppdRepo;
+	}
+	
+	public void parseExcelFile(InputStream is, String SHEET) throws ParseException {
 		try {
 			Workbook workbook = new XSSFWorkbook(is);
 
 			Sheet sheet = workbook.getSheet(SHEET);
 			Iterator<Row> rows = sheet.iterator();
-
-			List data = new ArrayList();
 			
 			int rowNumber = 0;
 			while (rows.hasNext()) {
@@ -51,10 +58,9 @@ public class ExcelUtil {
 
 				Iterator<Cell> cellsInRow = currentRow.iterator();
 
-				something(cellsInRow, data, SHEET);
+				something(cellsInRow, SHEET);
 			}
 			workbook.close();
-			return data;
 
 		}
 		
@@ -64,7 +70,7 @@ public class ExcelUtil {
 	}
 	
 	
-	 public void something(Iterator<Cell> cellsInRow, List data, String SHEET) throws ParseException {
+	 public void something(Iterator<Cell> cellsInRow,String SHEET) throws ParseException {
 		int cellIndex = 0;
 		Product product=null;
 		PricePerDay ppd=null;
@@ -90,19 +96,34 @@ public class ExcelUtil {
 						 if(ppd==null) {ppd = new PricePerDay();}
 						 
 						 switch(cellIndex) {
-							case 0:ppd.setDate(currentCell.getDateCellValue());break;
-							case 1:ppd.setPrice_per_lot(currentCell.getNumericCellValue());break;
-							case 2:ppd.setProduct(prodRepo.findById((long)currentCell.getNumericCellValue()).get());break;
+							case 0:try{
+								ppd.setDate(currentCell.getDateCellValue());break;
+							}
+							catch(Exception e) {
+								System.out.println("error in date field");break;
+							}
+							case 1:try{
+								ppd.setPrice_per_lot(currentCell.getNumericCellValue());break;
+							}
+							catch(Exception e) {
+								ppd.setPrice_per_lot(Double.parseDouble(currentCell.getStringCellValue()));break;
+							}
+							case 2:try{
+								ppd.setProduct(prodRepo.findById((long)currentCell.getNumericCellValue()).get());break;
+							}
+							catch(Exception e) {
+								ppd.setProduct(prodRepo.findById(Long.parseLong(currentCell.getStringCellValue())).get());break;
+							}
 							}
 					}
 			}
 			cellIndex++;
 		}
 		if(product!=null) {
-			data.add(product);
+			prodRepo.save(product);
 		}
 		if(ppd!=null) {
-			data.add(ppd);
+			ppdRepo.save(ppd);
 		}
 	}
 }
