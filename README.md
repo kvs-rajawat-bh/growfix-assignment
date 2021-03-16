@@ -2,6 +2,7 @@
 
 Run the application on localhost:15000/ 
 
+Java version used:- 11
 
 
 Endpoint details:-
