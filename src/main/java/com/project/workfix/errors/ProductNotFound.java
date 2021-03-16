@@ -8,7 +8,7 @@ public class ProductNotFound {
 	
 	private int code;
 	
-	ProductNotFound(long id, String message, int code){
+	public ProductNotFound(long id, String message, int code){
 		this.id=id;
 		this.message=message;
 		this.code=code;
