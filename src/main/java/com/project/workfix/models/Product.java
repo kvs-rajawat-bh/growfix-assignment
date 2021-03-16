@@ -16,7 +16,6 @@ import javax.persistence.TemporalType;
 public class Product {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private long id;
 	
 	
@@ -24,12 +23,13 @@ public class Product {
 	private String name;
 	
 	
-	@Temporal(TemporalType.DATE)
-	private Date maturity;
+//	@Temporal(TemporalType.DATE)
+	
+	private String maturity;
 	
 	
 	@Column(name="interest")
-	private double interest;
+	private String interest;
 	
 	@OneToMany(mappedBy="product")
 	private List<PricePerDay> ppd;
@@ -55,22 +55,22 @@ public class Product {
 	}
 
 
-	public Date getMaturity() {
+	public String getMaturity() {
 		return maturity;
 	}
 
 
-	public void setMaturity(Date maturity) {
+	public void setMaturity(String maturity) {
 		this.maturity = maturity;
 	}
 
 
-	public double getInterest() {
+	public String getInterest() {
 		return interest;
 	}
 
 
-	public void setInterest(double interest) {
+	public void setInterest(String interest) {
 		this.interest = interest;
 	}
 
